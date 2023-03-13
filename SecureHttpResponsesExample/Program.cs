@@ -1,8 +1,10 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SecureHttpResponsesExample.Areas.Identity;
 using SecureHttpResponsesExample.Data;
@@ -20,6 +22,16 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddSingleton<WeatherForecastService>();
+
+// Renames .AspNetCore.Antiforgery cookie
+builder.Services.AddAntiforgery(options => options.Cookie.Name = "CustomAntiforgeryCookie");
+// Renames CookieTempDataProvider
+builder.Services.Configure<CookieTempDataProviderOptions>(options => options.Cookie.Name = "CustomTempDataProvider");
+// Renames AspNetCore.Identity.Application cookie
+builder.Services.PostConfigure<CookieAuthenticationOptions>(IdentityConstants.ApplicationScheme, option =>
+{
+    option.Cookie.Name = "CustomIdentityCookie";
+});
 
 var app = builder.Build();
 
